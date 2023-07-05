@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <vue-name-app></vue-name-app>
+      <vue-add-task :exercises="exercises" :add-ex="addEx"></vue-add-task>
+      <vue-delete-task
+        :exercises="exercises"
+        :delete-ex="exDelete"
+      ></vue-delete-task>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+            exercises: [],
+          };
+        },
+        mounted() {
+          if (localStorage.getItem("exercises")) {
+            try {
+              this.exercises = JSON.parse(localStorage.getItem("exercises"));
+            } catch (e) {
+              localStorage.removeItem("exercises");
+            }
+          }
+        },
+        methods: {
+          addEx(newEx) {
+            this.exercises.push(newEx);
+            this.saveEx();
+          },
+          exDelete(n) {
+            this.exercises.splice(n, 1);
+            this.saveEx();
+          },
+          saveEx() {
+            let parsed = JSON.stringify(this.exercises);
+            localStorage.setItem("exercises", parsed);
+          },
+        },
+      });
+
+      app.component("vue-name-app", {
+        template: `
+          <h2>My tasks:</h2>
+        `,
+      });
+
+      app.component("vue-add-task", {
+        props: ["exercises", "addEx"],
+        data() {
+          return {
+            newEx: null,
+          };
+        },
+        template: `
+    <div>
+      <div>
+        <input type="text" v-model="newEx" />
+      </div>
+      <button @click="addEx(newEx)">Add new tasks</button>
+    </div>
+  `,
+      });
+
+      app.component("vue-delete-task", {
+        props: ["exercises", "deleteEx"],
+        template: `
+          <div v-for="(exercise, n) in exercises">
+            <p>
+              <span>{{ exercise }}</span>
+              <button @click="deleteEx(n)">Delete</button>
+            </p>
+          </div>
+        `,
+      });
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>
