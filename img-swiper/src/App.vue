@@ -26,7 +26,7 @@ export default {
 
         function changeImage() {
           const randomImg = Math.floor(Math.random() * images.length);
-          console.log(randomImg);
+          console.log(randomImg); //For checking
           el.src = images[randomImg];
         }
         changeImage();
